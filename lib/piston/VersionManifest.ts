@@ -2,18 +2,24 @@
  * @author p0t4t0sandwich
  */
 
-
 /**
  * @property {string} release - The latest release version of Minecraft
  * @property {string} snapshot - The latest snapshot version of Minecraft
  * @description The latest version of Minecraft
- * @see https://minecraft.gamepedia.com/Version_manifest.json
  */
 interface Latest {
     release: string;
     snapshot: string;
 }
 
+/**
+ * @property {string} id - The ID of the version
+ * @property {string} type - The type of the version
+ * @property {string} url - The URL of the version
+ * @property {string} time - The time of the version
+ * @property {string} releaseTime - The release time of the version
+ * @description A version of Minecraft
+ */
 interface Version {
     id: string;
     type: "release" | "snapshot" | "old_beta" | "old_alpha";
@@ -22,6 +28,11 @@ interface Version {
     releaseTime: string;
 }
 
+/**
+ * @property {Latest} latest - The latest version of Minecraft
+ * @property {Version[]} versions - The list of all versions of Minecraft
+ * @description The version manifest of Minecraft
+ */
 interface VersionManifestJson {
     latest: Latest;
     versions: Version[];
