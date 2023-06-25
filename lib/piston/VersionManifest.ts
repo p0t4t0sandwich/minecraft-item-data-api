@@ -1,6 +1,9 @@
 /**
+ * VersionManifest.ts
  * @author p0t4t0sandwich
  */
+
+import { MinecraftVersion } from "./MinecraftVersion.js";
 
 /**
  * @property {string} release - The latest release version of Minecraft
@@ -58,25 +61,27 @@ class VersionManifest implements VersionManifestJson {
      * @param latest The latest version of Minecraft
      * @param versions The list of all versions of Minecraft
      */
-    constructor(latest: Latest, versions: Version[]) {
-        this.latest = latest;
-        this.versions = versions;
+    constructor(json: any) {
+        this.latest = json.latest;
+        this.versions = json.versions;
     }
 
     /**
      * Function to create a VersionManifest from a JSON object
+     * @method fromJson
      * @param json The JSON object to create a VersionManifest from
      * @returns {VersionManifest} The VersionManifest created from the JSON object
      */
-    static fromJson(json: { latest: Latest, versions: Version[] }): VersionManifest {
-        return new VersionManifest(json.latest, json.versions);
+    static fromJson(json: any): VersionManifest {
+        return new VersionManifest(json);
     }
 
     /**
      * Function to create a JSON object from a VersionManifest
-     * @returns { latest: Latest, versions: Version[] } The JSON object of the VersionManifest
+     * @method toJson
+     * @returns {VersionManifestJson} The JSON object of the VersionManifest
      */
-    toJson(): { latest: Latest, versions: Version[] } {
+    toJson(): VersionManifestJson {
         return {
             latest: this.latest,
             versions: this.versions
@@ -85,6 +90,7 @@ class VersionManifest implements VersionManifestJson {
 
     /**
      * Function to create a stringified JSON object from a VersionManifest
+     * @method toString
      * @returns {string} The stringified JSON object of the VersionManifest
      */
     toString(): string {
@@ -93,6 +99,7 @@ class VersionManifest implements VersionManifestJson {
 
     /**
      * Function to create a VersionManifest from a URL
+     * @method fromUrl
      * @param url The URL to create a VersionManifest from, defaults to https://launchermeta.mojang.com/mc/game/version_manifest.json
      * @returns {Promise<VersionManifest>} The VersionManifest created from the URL
      */
@@ -104,52 +111,32 @@ class VersionManifest implements VersionManifestJson {
 
     /**
      * Function to get a version of Minecraft
+     * @method getVersion
      * @param version The version of Minecraft to get
      * @returns {Promise<Version>} The version of Minecraft
      */
-    async getVersion(version: string): Promise<Version> {
-        return this.versions.find((v) => v.id === version);
+    async getVersion(version: string): Promise<MinecraftVersion> {
+        const versionData = this.versions.find(v => v.id === version);
+        if (versionData === undefined) return undefined;
+        return MinecraftVersion.fromUrl(versionData.url);
     }
 
     /**
      * Function to get the latest version of Minecraft
+     * @method getLatestVersion
      * @returns {Promise<Version>} The latest version of Minecraft
      */
-    async getLatestVersion(): Promise<Version> {
-        return this.getVersion(this.latest.release);
+    async getLatestVersion(): Promise<MinecraftVersion> {
+        return await this.getVersion(this.latest.release);
     }
 
     /**
      * Function to get the latest snapshot version of Minecraft
+     * @method getLatestSnapshot
      * @returns {Promise<Version>} The latest snapshot version of Minecraft
      */
-    async getLatestSnapshot(): Promise<Version> {
-        return this.getVersion(this.latest.snapshot);
-    }
-
-    /**
-     * Function to get the URL of a version of Minecraft
-     * @param version The version of Minecraft to get the URL of
-     * @returns {Promise<string>} The URL of the version of Minecraft
-     */
-    async getVersionUrl(version: string): Promise<string> {
-        return (await this.getVersion(version)).url;
-    }
-
-    /**
-     * Function to get the URL of the latest version of Minecraft
-     * @returns {Promise<string>} The URL of the latest version of Minecraft
-     */
-    async getLatestVersionUrl(): Promise<string> {
-        return this.getVersionUrl(this.latest.release);
-    }
-
-    /**
-     * Function to get the URL of the latest snapshot version of Minecraft
-     * @returns {Promise<string>} The URL of the latest snapshot version of Minecraft
-     */
-    async getLatestSnapshotUrl(): Promise<string> {
-        return this.getVersionUrl(this.latest.snapshot);
+    async getLatestSnapshot(): Promise<MinecraftVersion> {
+        return await this.getVersion(this.latest.snapshot);
     }
 }
 
