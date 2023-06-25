@@ -1,0 +1,17 @@
+---
+version: "3.8"
+services:
+  minecraft-version-data-api:
+    image: p0t4t0sandwich/minecraft-version-data-api:latest
+    container_name: minecraft-version-data-api
+    environment:
+      - TZ=UTC
+      - REST_PORT=               # Port to listen on
+      - MONGODB_URI=             # MongoDB connection string
+      - MONGODB_DB=              # MongoDB database name
+      - DOMAIN=                  # Domain name for the REST API
+      - ROOT_ENDPOINT=           # Root endpoint for the REST API
+      - AUTH_TOKEN=              # Auth token for the REST API
+    ports:
+      - "0.0.0.0:3002:3002"
+    restart: unless-stopped
